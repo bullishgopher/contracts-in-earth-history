@@ -59,8 +59,7 @@ contract Doodles is ERC721, ERC721Enumerable, Ownable {
 
     mapping(address => uint8) private _allowList;
 
-    constructor() ERC721("Doodles", "DOODLE") {
-    }
+    constructor() ERC721("Doodles", "DOODLE") {}
 
     function setIsAllowListActive(bool _isAllowListActive) external onlyOwner {
         isAllowListActive = _isAllowListActive;
@@ -89,15 +88,21 @@ contract Doodles is ERC721, ERC721Enumerable, Ownable {
         }
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal override(ERC721, ERC721Enumerable) {
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override(ERC721, ERC721Enumerable) {
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
-    function setBaseURI(string memory baseURI_) external onlyOwner() {
+    function setBaseURI(string memory baseURI_) external onlyOwner {
         _baseURIextended = baseURI_;
     }
 
@@ -110,11 +115,11 @@ contract Doodles is ERC721, ERC721Enumerable, Ownable {
     }
 
     function reserve(uint256 n) public onlyOwner {
-      uint supply = totalSupply();
-      uint i;
-      for (i = 0; i < n; i++) {
-          _safeMint(msg.sender, supply + i);
-      }
+        uint supply = totalSupply();
+        uint i;
+        for (i = 0; i < n; i++) {
+            _safeMint(msg.sender, supply + i);
+        }
     }
 
     function setSaleState(bool newState) public onlyOwner {

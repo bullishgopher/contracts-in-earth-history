@@ -8,6 +8,8 @@
 
 [PudgyPenguins](https://github.com/bullishgopher/contracts-in-earth-history/blob/main/contracts/PudgyPenguins.sol)
 
+[Ordinalines](https://github.com/bullishgopher/contracts-in-earth-history/blob/main/contracts/Ordinalines.sol)
+
 A Hardhat-based project for developing Solidity smart contracts, with sensible defaults.
 
 - [Hardhat](https://github.com/nomiclabs/hardhat): compile, run and test smart contracts

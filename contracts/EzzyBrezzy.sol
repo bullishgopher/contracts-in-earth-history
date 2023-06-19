@@ -6,8 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-
-contract OwnableDelegateProxy { }
+contract OwnableDelegateProxy {}
 
 contract ProxyRegistry {
     mapping(address => OwnableDelegateProxy) public proxies;
@@ -29,32 +28,33 @@ contract EzzyBrezzy is ERC721A, Ownable {
     string public constant COL_NAME = "Ezzy Brezzy";
     string public constant TICKER = "EZBZ";
 
-    uint256 public MAX_ELEMENTS = 1667;  //must be +1
+    uint256 public MAX_ELEMENTS = 1667; //must be +1
     uint256 public PRICE = 0.049 ether;
-    uint256 public constant SALE_LIMIT = 4;  //must be +1
+    uint256 public constant SALE_LIMIT = 4; //must be +1
 
     address public whiteListSigningAddress = address(0xc429C9A7Db096B4e5795D280A203f8dBC284c9d7);
 
-
     address public constant wdAddress = address(0x08678c1609ee1023f1F9F3951E7620daF8e2D0f9);
 
-
-    enum Status {CLOSED, PRESALE, SALE}
+    enum Status {
+        CLOSED,
+        PRESALE,
+        SALE
+    }
     Status public state = Status.CLOSED;
     string public baseTokenURI;
 
     address proxyRegistryAddress;
- 
-    constructor(string memory baseURI, address _proxyRegistryAddress) ERC721A(COL_NAME, TICKER){
+
+    constructor(string memory baseURI, address _proxyRegistryAddress) ERC721A(COL_NAME, TICKER) {
         setBaseURI(baseURI);
         proxyRegistryAddress = _proxyRegistryAddress;
     }
 
-    modifier saleIsOpen {
-       require (state != Status.CLOSED, "sales closed");
+    modifier saleIsOpen() {
+        require(state != Status.CLOSED, "sales closed");
         _;
     }
-
 
     function setWhiteListSigningAddress(address _signingAddress) external onlyOwner {
         whiteListSigningAddress = _signingAddress;
@@ -72,13 +72,14 @@ contract EzzyBrezzy is ERC721A, Ownable {
         baseTokenURI = baseURI;
     }
 
-     function setPrice(uint256 newPrice) public onlyOwner {
+    function setPrice(uint256 newPrice) public onlyOwner {
         PRICE = newPrice;
     }
 
-     function setMaxElements(uint256 newMax) public onlyOwner {
+    function setMaxElements(uint256 newMax) public onlyOwner {
         MAX_ELEMENTS = newMax;
     }
+
     //compat
     function isDropActive() public view returns (bool) {
         return state != Status.CLOSED;
@@ -87,17 +88,14 @@ contract EzzyBrezzy is ERC721A, Ownable {
     //compat
 
     function _startTokenId() internal pure override returns (uint) {
-		return 1;
-	}
+        return 1;
+    }
 
-    function tokenURI(uint256 tokenId) public override view returns (string memory)
-        {
-            require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
-            return bytes(_baseURI()).length > 0 
-                ? string(abi.encodePacked(_baseURI(), tokenId.toString(), (".json")))
-                : "";
-        }
+        return bytes(_baseURI()).length > 0 ? string(abi.encodePacked(_baseURI(), tokenId.toString(), (".json"))) : "";
+    }
 
     function mintedCount(address addressToCheck) external view returns (uint) {
         return _numberMinted(addressToCheck);
@@ -107,19 +105,20 @@ contract EzzyBrezzy is ERC721A, Ownable {
         uint16 freeMintsAllowed = 0;
 
         uint16 quantityToPay = quantity;
- 
+
         if (_numberMinted(buyer) == 0) {
             quantityToPay = quantity - freeMintsAllowed;
         }
 
-        return MintInfo(
-        /* unitPrice */ PRICE,
-        /* undiscountedPrice */ PRICE * quantity,
-        /* priceToPay */ PRICE * quantityToPay,
-        /* dropActive */ isDropActive(),
-        /* totalMints */ quantity,
-        /* mintsToPay */ quantityToPay
-        );
+        return
+            MintInfo(
+                /* unitPrice */ PRICE,
+                /* undiscountedPrice */ PRICE * quantity,
+                /* priceToPay */ PRICE * quantityToPay,
+                /* dropActive */ isDropActive(),
+                /* totalMints */ quantity,
+                /* mintsToPay */ quantityToPay
+            );
     }
 
     function airdrop(address to, uint16 quantity) external onlyOwner {
@@ -135,14 +134,11 @@ contract EzzyBrezzy is ERC721A, Ownable {
         require((_numToMint + _numberMinted(_msgSender())) < SALE_LIMIT, "minting more than allowed");
         require(msg.value == info.priceToPay, "value must equal price");
 
-        if(state == Status.PRESALE) {
+        if (state == Status.PRESALE) {
             require(
                 whiteListSigningAddress ==
                     keccak256(
-                        abi.encodePacked(
-                            "\x19Ethereum Signed Message:\n32",
-                            bytes32(uint256(uint160(msg.sender)))
-                        )
+                        abi.encodePacked("\x19Ethereum Signed Message:\n32", bytes32(uint256(uint160(msg.sender))))
                     ).recover(_signature),
                 "you are not whitelisted"
             );
@@ -155,7 +151,7 @@ contract EzzyBrezzy is ERC721A, Ownable {
     function withdraw() external onlyOwner {
         uint256 balance = address(this).balance;
         require(balance > 0);
-        (bool success, ) = wdAddress.call{value:  balance}("");
+        (bool success, ) = wdAddress.call{ value: balance }("");
         require(success, "Transfer failed.");
     }
 
@@ -168,5 +164,4 @@ contract EzzyBrezzy is ERC721A, Ownable {
 
         return super.isApprovedForAll(owner, operator);
     }
-
 }

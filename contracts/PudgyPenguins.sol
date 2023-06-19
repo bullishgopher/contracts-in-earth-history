@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC721Pausable.sol";
+
 contract PudgyPenguins is ERC721Enumerable, Ownable, ERC721Burnable, ERC721Pausable {
     using SafeMath for uint256;
     using Counters for Counters.Counter;
@@ -15,7 +16,7 @@ contract PudgyPenguins is ERC721Enumerable, Ownable, ERC721Burnable, ERC721Pausa
     Counters.Counter private _tokenIdTracker;
 
     uint256 public constant MAX_ELEMENTS = 8888;
-    uint256 public constant PRICE = 3 * 10**16;
+    uint256 public constant PRICE = 3 * 10 ** 16;
     uint256 public constant MAX_BY_MINT = 20;
     uint256 public constant reveal_timestamp = 1627588800; // Thu Jul 29 2021 20:00:00 GMT+0000
     address public constant creatorAddress = 0x6F84Fa72Ca4554E0eEFcB9032e5A4F1FB41b726C;
@@ -23,24 +24,28 @@ contract PudgyPenguins is ERC721Enumerable, Ownable, ERC721Burnable, ERC721Pausa
     string public baseTokenURI;
 
     event CreatePenguin(uint256 indexed id);
+
     constructor(string memory baseURI) ERC721("PudgyPenguins", "PPG") {
         setBaseURI(baseURI);
         pause(true);
     }
 
-    modifier saleIsOpen {
+    modifier saleIsOpen() {
         require(_totalSupply() <= MAX_ELEMENTS, "Sale end");
         if (_msgSender() != owner()) {
             require(!paused(), "Pausable: paused");
         }
         _;
     }
+
     function _totalSupply() internal view returns (uint) {
         return _tokenIdTracker.current();
     }
+
     function totalMint() public view returns (uint256) {
         return _totalSupply();
     }
+
     function mint(address _to, uint256 _count) public payable saleIsOpen {
         uint256 total = _totalSupply();
         require(total + _count <= MAX_ELEMENTS, "Max limit");
@@ -52,12 +57,14 @@ contract PudgyPenguins is ERC721Enumerable, Ownable, ERC721Burnable, ERC721Pausa
             _mintAnElement(_to);
         }
     }
+
     function _mintAnElement(address _to) private {
         uint id = _totalSupply();
         _tokenIdTracker.increment();
         _safeMint(_to, id);
         emit CreatePenguin(id);
     }
+
     function price(uint256 _count) public pure returns (uint256) {
         return PRICE.mul(_count);
     }
@@ -97,7 +104,7 @@ contract PudgyPenguins is ERC721Enumerable, Ownable, ERC721Burnable, ERC721Pausa
     }
 
     function _widthdraw(address _address, uint256 _amount) private {
-        (bool success, ) = _address.call{value: _amount}("");
+        (bool success, ) = _address.call{ value: _amount }("");
         require(success, "Transfer failed.");
     }
 
@@ -109,8 +116,9 @@ contract PudgyPenguins is ERC721Enumerable, Ownable, ERC721Burnable, ERC721Pausa
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
-    
 }
