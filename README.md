@@ -1,5 +1,13 @@
 # Smart contracts for all
 
+[Greeter](https://github.com/bullishgopher/contracts-in-earth-history/blob/main/contracts/Greeter.sol)
+
+[EzzyBrezzy](https://github.com/bullishgopher/contracts-in-earth-history/blob/main/contracts/EzzyBrezzy.sol)
+
+[Doodles](https://github.com/bullishgopher/contracts-in-earth-history/blob/main/contracts/Doodles.sol)
+
+[PudgyPenguins](https://github.com/bullishgopher/contracts-in-earth-history/blob/main/contracts/PudgyPenguins.sol)
+
 A Hardhat-based project for developing Solidity smart contracts, with sensible defaults.
 
 - [Hardhat](https://github.com/nomiclabs/hardhat): compile, run and test smart contracts
